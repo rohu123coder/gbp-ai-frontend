@@ -2,11 +2,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+// For future: Use env variable if you want to change URLs easily
+// const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "https://gbp-ai-backend.onrender.com";
+
 export default function Home() {
   const [backendMsg, setBackendMsg] = useState("");
 
   useEffect(() => {
-    // LIVE backend URL
     axios.get("https://gbp-ai-backend.onrender.com/")
       .then((res) => {
         setBackendMsg(res.data.message || "API call success");
@@ -14,11 +16,14 @@ export default function Home() {
       .catch(() => {
         setBackendMsg("Backend not reachable");
       });
+    // If using env variable:
+    // axios.get(`${BACKEND_URL}/`)
   }, []);
 
   const handleGoogleLogin = () => {
-    // LIVE backend URL for Google OAuth
     window.location.href = "https://gbp-ai-backend.onrender.com/api/auth/google";
+    // Or, if using env:
+    // window.location.href = `${BACKEND_URL}/api/auth/google`;
   };
 
   return (
