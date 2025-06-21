@@ -8,6 +8,8 @@ import axios from "axios";
 export default function Home() {
   const [backendMsg, setBackendMsg] = useState("");
 
+  axios.defaults.withCredentials = true;
+
   useEffect(() => {
     axios.get("https://gbp-ai-backend.onrender.com/")
       .then((res) => {
