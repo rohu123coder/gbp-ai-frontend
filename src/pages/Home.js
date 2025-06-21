@@ -6,7 +6,8 @@ export default function Home() {
   const [backendMsg, setBackendMsg] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:5000/")
+    // LIVE backend URL
+    axios.get("https://gbp-ai-backend.onrender.com/")
       .then((res) => {
         setBackendMsg(res.data.message || "API call success");
       })
@@ -16,8 +17,8 @@ export default function Home() {
   }, []);
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:5000/api/auth/google";
-    // For production, use: window.location.href = "https://gbp-ai-backend.onrender.com/api/auth/google";
+    // LIVE backend URL for Google OAuth
+    window.location.href = "https://gbp-ai-backend.onrender.com/api/auth/google";
   };
 
   return (
@@ -44,4 +45,3 @@ export default function Home() {
     </div>
   );
 }
-
