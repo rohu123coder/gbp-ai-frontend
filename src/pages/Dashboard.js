@@ -1,32 +1,45 @@
-// src/pages/Home.js
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 const BACKEND_URL = "https://gbp-ai-backend.onrender.com";
-
-// Set credentials globally for axios
-axios.defaults.withCredentials = true;
 
 export default function Dashboard() {
   const [backendMsg, setBackendMsg] = useState("");
   const [locations, setLocations] = useState([]);
   const [error, setError] = useState("");
 
-  // Backend connectivity check
+  // 1. Save JWT token from URL to localStorage
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const token = url.searchParams.get("token");
+    if (token) {
+      localStorage.setItem("jwt", token);
+      // Remove token from URL for cleaner UX
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
+  // 2. Backend health check (optional)
   useEffect(() => {
     axios.get(`${BACKEND_URL}/`)
       .then(res => setBackendMsg(res.data.message || "API call success"))
       .catch(() => setBackendMsg("Backend not reachable"));
   }, []);
 
-  // Fetch GBP Locations
+  // 3. Fetch GBP Locations (with JWT in header)
   const fetchLocations = async () => {
     setError("");
     setLocations([]);
+    const token = localStorage.getItem("jwt");
+    if (!token) {
+      setError("Not logged in!");
+      return;
+    }
     try {
-      const res = await axios.get(`${BACKEND_URL}/api/gbp/locations`, { withCredentials: true });
-      // The data shape: { accounts: [ ... ] } or direct list, adjust as needed
-      const accounts = res.data.accounts || res.data || [];
+      const res = await axios.get(`${BACKEND_URL}/api/gbp/locations`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const accounts = res.data.accounts || res.data.locations || res.data || [];
       if (accounts.length === 0) setError("No GBP locations found.");
       setLocations(accounts);
     } catch (e) {
@@ -34,7 +47,7 @@ export default function Dashboard() {
     }
   };
 
-  // Google Login
+  // 4. Google Login (use backend endpoint)
   const handleGoogleLogin = () => {
     window.location.href = `${BACKEND_URL}/api/auth/google`;
   };
